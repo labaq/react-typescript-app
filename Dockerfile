@@ -14,3 +14,17 @@ RUN yarn install
 COPY . /app
 
 RUN yarn run build
+
+# production environment
+FROM nginx
+
+RUN apt-get update
+RUN apt-get -y install --assume-yes curl
+#RUN apt-get -y install --assume-yes iputils-ping
+
+# RUN rm -rf /etc/nginx/conf.d
+# COPY ./docker_setting/conf /etc/nginx
+COPY --from=build /app /usr/share/app
+COPY --from=build /app/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
